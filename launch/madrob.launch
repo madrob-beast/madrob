@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+
+<launch>
+  <arg name="gateway_port" default="$(optenv NOVA_USB_GATEWAY_PORT /dev/nova_usb_gateway)" />
+  <arg name="vesc_port" default="$(optenv VESC_PORT /dev/vesc)" />
+
+  <!-- rosserial node -->
+  <node pkg="rosserial_python" type="serial_node.py" name="serial_node" output="screen" respawn="true">
+    <param name="~port" value="$(arg gateway_port)" />
+    <param name="~baud" value="115200" />
+  </node>
+
+  <!-- VESC driver node -->
+  <node pkg="vesc_driver" type="vesc_driver_node" name="vesc_node" output="screen" respawn="true">
+    <param name="port" value="$(arg vesc_port)" />
+  </node>
+
+  <!-- bridge node -->
+  <node pkg="madrob" type="bridge_handle.py" name="bridge_handle_node" output="screen" respawn="true">
+  </node>
+  
+</launch>
+
