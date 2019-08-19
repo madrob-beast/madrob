@@ -40,7 +40,7 @@ def get_door_controller_mode(req):
     return GetDoorControllerModeResponse(door_controller_mode, True, "Dummy response")
 
 def set_door_controller_lut(req):
-    print "SetDoorControllerLUT(type: {}, value[0]: {}, value[90]: {}, value[180]: {})".format(req.type, req.values[0], req.values[90], req.values[180])
+    print "SetDoorControllerLUT(type: {}, value[-90]: {}, value[0]: {}, value[90]: {})".format(req.type, req.values[0], req.values[90], req.values[180])
     return SetDoorControllerLUTResponse(True, "Dummy response")
 
 def main(): 
