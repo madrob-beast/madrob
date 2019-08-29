@@ -1,0 +1,3 @@
+SUBSYSTEM=="tty", SUBSYSTEMS=="usb", ATTRS{idVendor}=="0483", ATTRS{idProduct}=="5740", ATTRS{serial}=="1B001D001357414134323220", SYMLINK+="nova_usb_gateway"
+SUBSYSTEM=="tty", SUBSYSTEMS=="usb", ATTRS{idVendor}=="0483", ATTRS{idProduct}=="5740", ATTRS{serial}=="301", SYMLINK+="vesc"
+
