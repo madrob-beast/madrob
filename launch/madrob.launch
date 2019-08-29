@@ -15,9 +15,5 @@
     <param name="port" value="$(arg vesc_port)" />
   </node>
 
-  <!-- bridge node -->
-  <node pkg="madrob" type="bridge_handle.py" name="bridge_handle_node" output="screen" respawn="true">
-  </node>
-  
 </launch>
 
