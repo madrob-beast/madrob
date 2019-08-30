@@ -20,14 +20,23 @@ def set_lut_client(type, values):
 
 # parser
 parser = argparse.ArgumentParser()
-parser.add_argument('-l', '--set_lut', help="Set door controller LUT from YAML file")
+parser.add_argument('-f', '--file', help="Set door controller LUT from YAML file")
+parser.add_argument('-t', '--type', type=int, help="Specify LUT type (0 = CW, 1 = CCW)")
+parser.add_argument('-c', '--constant', type=int, help="Constant LUT value")
 
 args = parser.parse_args()
 
-if args.set_lut:
-    with open(args.set_lut, 'r') as stream:
+if args.file:
+    with open(args.file, 'r') as stream:
         try:
             data = yaml.safe_load(stream)
+            if args.type:
+                data['type'] = args.type
             set_lut_client(data['type'], data['values'])
         except yaml.YAMLError as e:
             print(e)
+
+if args.constant:
+    data = {}
+    data['type'] = args.type
+    data['values'] = [args.constant] * 181
