@@ -6,47 +6,38 @@ from madrob_msgs.msg import *
 from madrob_srvs.srv import *
 
 handle_calibration = {
-    'gains': (1, 2, 3, 4),
-    'offsets': (0, 0, 0, 0)
+    'gain': 1.0,
+    'offset': 0.0
 }
 
 def calibrate_handle(req):
-    print "CalibrateHandleRequest(step: {}, force: {})".format(req.step, req.force)
+    print "CalibrateHandleRequest(samples: {}, step: {}, force: {})".format(req.samples, req.step, req.force)
     return CalibrateHandleResponse(True, "Dummy response")
 
 def set_handle_calibration(req):
-    print "SetHandleCalibrationRequest(gains: {}, offsets: {})".format(req.gains, req.offsets)
-    handle_calibration['gains'] = req.gains
-    handle_calibration['offsets'] = req.offsets
+    print "SetHandleCalibrationRequest(gain: {}, offset: {})".format(req.gain, req.offset)
+    handle_calibration['gain'] = req.gain
+    handle_calibration['offset'] = req.offset
     return SetHandleCalibrationResponse(True, "Dummy response")
-
-def get_handle_calibration(req):
-    print "GetHandleCalibrationRequest()"
-    return GetHandleCalibrationResponse(handle_calibration['gains'], handle_calibration['offsets'], True, "Dummy response")
 
 def main(): 
     rospy.init_node('dummy_handle')
 
-    rospy.Service('~calibrate_handle', CalibrateHandle, calibrate_handle)
-    rospy.Service('~set_handle_calibration', SetHandleCalibration, set_handle_calibration)
-    rospy.Service('~get_handle_calibration', GetHandleCalibration, get_handle_calibration)
+    rospy.Service('~calibrate', CalibrateHandle, calibrate_handle)
+    rospy.Service('~set_calibration', SetHandleCalibration, set_handle_calibration)
 
-    force_pub = rospy.Publisher('~force', Handle, queue_size=10)
-    raw_pub = rospy.Publisher('~raw', HandleRAW, queue_size=10)
+    force_pub = rospy.Publisher('~state', Handle, queue_size=10)
 
     rate = rospy.Rate(50) # 10hz
 
     while not rospy.is_shutdown():
         msg = Handle()
         msg.force = random.random() * 20
-        msg.status = Handle.STATUS_OK
+        msg.kappa = handle_calibration['gain']
+        msg.offset = handle_calibration['offset']
+        msg.calibration_status = 3
+        
         force_pub.publish(msg)
-
-        msg = HandleRAW()
-        for i in range(len(msg.loadcells)):
-            msg.loadcells[i].adu = random.randint(-2**31, 2**31-1)
-            msg.loadcells[i].status = LoadCell.STATUS_OK
-        raw_pub.publish(msg)
 
         rate.sleep()
 

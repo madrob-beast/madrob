@@ -4,6 +4,7 @@ import rospy
 
 from madrob_msgs.msg import *
 from madrob_srvs.srv import *
+from std_msgs.msg import *
 
 door_position_calibration = {
     'cw': -0.9,
@@ -11,7 +12,29 @@ door_position_calibration = {
     'ccw': 0.9
 }
 
-door_controller_mode = SetDoorControllerModeRequest.DOOR_MODE_LUT
+motor_kt = 1.0
+
+door_controller_mode = SetDoorControllerModeRequest.MODE_LUT
+
+def set_door_brake(req):
+    print "SetDoorBrake(method: {}, mu: {}, setpoint: {})".format(req.method, req.mu, req.setpoint)
+    return SetDoorBrakeResponse(True, "Dummy response")
+
+def set_door_controller_lut(req):
+    print "SetDoorControllerLUT(type: {}, value[-90]: {}, value[0]: {}, value[90]: {})".format(req.type, req.values[0], req.values[90], req.values[180])
+    return SetDoorControllerLUTResponse(True, "Dummy response")
+
+def set_door_controller_mode(req):
+    global door_controller_mode
+    print "SetDoorControllerModeRequest(mode: {})".format(req.mode)
+    door_controller_mode = req.mode
+    return SetDoorControllerModeResponse(True, "Dummy response")
+
+def set_force_calibration(req):
+    global motor_kt
+    print "SetDoorControllerCalibration(kt: {})".format(req.kt)
+    motor_kt = req.mode
+    return SetDoorControllerCalibrationResponse(True, "Dummy response")
 
 def calibrate_door_position(req):
     print "CalibrateDoorPositionRequest(position: {})".format(req.position)
@@ -24,36 +47,22 @@ def set_door_position_calibration(req):
     door_position_calibration['ccw'] = req.ccw
     return SetDoorPositionCalibrationResponse(True, "Dummy response")
 
-def get_door_position_calibration(req):
-    print "GetDoorPositionCalibrationRequest()"
-    return GetDoorPositionCalibrationResponse(door_position_calibration['cw'], door_position_calibration['zero'], door_position_calibration['ccw'], True, "Dummy response")
+def brake_setpoint(data):
+    print "Brake setpoint = {}".format(data.data)
 
-def set_door_controller_mode(req):
-    global door_controller_mode
-    print "SetDoorControllerModeRequest(mode: {})".format(req.mode)
-    door_controller_mode = req.mode
-    return SetDoorControllerModeResponse(True, "Dummy response")
-
-def get_door_controller_mode(req):
-    global door_controller_mode
-    print "GetDoorControllerModeRequest()"
-    return GetDoorControllerModeResponse(door_controller_mode, True, "Dummy response")
-
-def set_door_controller_lut(req):
-    print "SetDoorControllerLUT(type: {}, value[-90]: {}, value[0]: {}, value[90]: {})".format(req.type, req.values[0], req.values[90], req.values[180])
-    return SetDoorControllerLUTResponse(True, "Dummy response")
 
 def main(): 
     rospy.init_node('dummy_door')
 
-    rospy.Service('~calibrate_door_position', CalibrateDoorPosition, calibrate_door_position)
-    rospy.Service('~set_door_position_calibration', SetDoorPositionCalibration, set_door_position_calibration)
-    rospy.Service('~get_door_position_calibration', GetDoorPositionCalibration, get_door_position_calibration)
-    rospy.Service('~set_door_controller_mode', SetDoorControllerMode, set_door_controller_mode)
-    rospy.Service('~get_door_controller_mode', GetDoorControllerMode, get_door_controller_mode)
-    rospy.Service('~set_door_controller_lut', SetDoorControllerLUT, set_door_controller_lut)
+    rospy.Service('~set_brake', SetDoorBrake, set_door_brake)
+    rospy.Service('~set_lut', SetDoorControllerLUT, set_door_controller_lut)
+    rospy.Service('~set_mode', SetDoorControllerMode, set_door_controller_mode)
+    rospy.Service('~set_force_calibration', SetDoorControllerCalibration, set_force_calibration)
+    rospy.Service('~calibrate_position', CalibrateDoorPosition, calibrate_door_position)
+    rospy.Service('~set_position_calibration', SetDoorPositionCalibration, set_door_position_calibration)
 
-    force_pub = rospy.Publisher('~door', Door, queue_size=10)
+    force_pub = rospy.Publisher('~state', Door, queue_size=10)
+    setpoint_sub = rospy.Subscriber('~brake_setpoint', Float32, brake_setpoint)
 
     rate = rospy.Rate(50) # 10hz
 
@@ -63,12 +72,25 @@ def main():
         msg.velocity = random.random()
         msg.duty_cycle = random.random()
         msg.supply_current = random.random()
-        msg.phase_current = [random.random(), random.random(), random.random()]
-        msg.brake_current = random.random()
-        msg.brake_force = msg.brake_current
+        msg.phase_current = random.random()
 
+        msg.mode = door_controller_mode
         msg.state = Door.STATE_IDLE
         msg.status = Door.STATUS_OK
+
+
+        msg.brake_method = 3
+        msg.brake_mu = 1
+        msg.brake_setpoint = random.randint(0, 2000)
+        msg.brake_current = random.randint(0, 100)
+        msg.brake_force = msg.brake_setpoint
+
+        msg.position_calibration_ccw = door_position_calibration['ccw']
+        msg.position_calibration_zero = door_position_calibration['zero']
+        msg.position_calibration_cw = door_position_calibration['cw']
+
+        msg.kt = motor_kt
+
         force_pub.publish(msg)
 
         rate.sleep()
