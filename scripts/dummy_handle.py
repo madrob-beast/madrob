@@ -32,6 +32,8 @@ def main():
 
     while not rospy.is_shutdown():
         msg = Handle()
+        msg.header.stamp = rospy.Time.now()
+
         msg.force = random.random() * 20
         msg.kappa = handle_calibration['gain']
         msg.offset = handle_calibration['offset']

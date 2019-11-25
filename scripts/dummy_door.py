@@ -68,6 +68,8 @@ def main():
 
     while not rospy.is_shutdown():
         msg = Door()
+        msg.header.stamp = rospy.Time.now()
+
         msg.angle = random.randint(-90, 90)
         msg.velocity = random.random()
         msg.duty_cycle = random.random()

@@ -17,6 +17,8 @@ def main():
 
     while not rospy.is_shutdown():
         msg = Passage()
+        msg.header.stamp = rospy.Time.now()
+
         msg.ranges[0].range = random.randint(0, 2500)
         msg.ranges[1].range = random.randint(0, 2500)
         msg.ranges[2].range = random.randint(0, 2500)
@@ -24,6 +26,8 @@ def main():
         ccw_left.publish(msg)
 
         msg = Passage()
+        msg.header.stamp = rospy.Time.now()
+
         msg.ranges[0].range = random.randint(0, 2500)
         msg.ranges[1].range = random.randint(0, 2500)
         msg.ranges[2].range = random.randint(0, 2500)
@@ -31,6 +35,8 @@ def main():
         ccw_right.publish(msg)
 
         msg = Passage()
+        msg.header.stamp = rospy.Time.now()
+
         msg.ranges[0].range = random.randint(0, 2500)
         msg.ranges[1].range = random.randint(0, 2500)
         msg.ranges[2].range = random.randint(0, 2500)
@@ -38,6 +44,8 @@ def main():
         cw_left.publish(msg)
 
         msg = Passage()
+        msg.header.stamp = rospy.Time.now()
+        
         msg.ranges[0].range = random.randint(0, 2500)
         msg.ranges[1].range = random.randint(0, 2500)
         msg.ranges[2].range = random.randint(0, 2500)
