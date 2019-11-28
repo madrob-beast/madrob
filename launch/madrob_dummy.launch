@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+
+<launch>
+
+  <node pkg="madrob" type="dummy_door.py" name="dummy_door" output="screen"/>
+  <node pkg="madrob" type="dummy_handle.py" name="dummy_handle" output="screen"/>
+  <node pkg="madrob" type="dummy_passage.py" name="dummy_passage" output="screen"/>
+
+</launch>
