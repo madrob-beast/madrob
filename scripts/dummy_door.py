@@ -52,7 +52,7 @@ def brake_setpoint(data):
 
 
 def main(): 
-    rospy.init_node('dummy_door')
+    rospy.init_node('door')
 
     rospy.Service('~set_brake', SetDoorBrake, set_door_brake)
     rospy.Service('~set_lut', SetDoorControllerLUT, set_door_controller_lut)

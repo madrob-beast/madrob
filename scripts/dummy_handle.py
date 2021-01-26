@@ -21,7 +21,7 @@ def set_handle_calibration(req):
     return SetHandleCalibrationResponse(True, "Dummy response")
 
 def main(): 
-    rospy.init_node('dummy_handle')
+    rospy.init_node('handle')
 
     rospy.Service('~calibrate', CalibrateHandle, calibrate_handle)
     rospy.Service('~set_calibration', SetHandleCalibration, set_handle_calibration)

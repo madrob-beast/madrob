@@ -6,7 +6,7 @@ from madrob_msgs.msg import *
 from madrob_srvs.srv import *
 
 def main(): 
-    rospy.init_node('dummy_passage')
+    rospy.init_node('passage')
 
     ccw_left = rospy.Publisher('~ccw_left', Passage, queue_size=10)
     ccw_right = rospy.Publisher('~ccw_right', Passage, queue_size=10)
